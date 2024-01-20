@@ -17,4 +17,7 @@ How to use the application....
 ## Features
 Live Record
 File Upload
+Voice Profiles
+Voice Comments
+Audio Collaborations
 Continue list of features....
