@@ -40,7 +40,7 @@ export default function Upload() {
       <div className="upload">
       <video src="/videos/background.mp4" autoPlay loop muted className="dimmed-video" />
         <div className="hero-container">
-          <h1 style={{ color: "white" }}>UPLOAD IMAGE</h1>
+          <h1 style={{ color: "white" }}>UPLOAD AUDIO</h1>
             <div className="hero-btns">
               <UploadFile className="custom-upload-btn" color="black" fontSize="extra large" {...getRootProps()}>
                   <input {...getInputProps()} />

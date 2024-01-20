@@ -1,5 +1,5 @@
 {
-  "name": "mood-music",
+  "name": "audio-scapes",
   "version": "0.1.0",
   "proxy": "http://localhost:5000",
   "private": true,
@@ -50,5 +50,8 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "@babel/plugin-proposal-private-property-in-object": "^7.21.11"
   }
 }

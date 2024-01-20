@@ -9,7 +9,7 @@ function FileUpload() {
 
   const { getRootProps, getInputProps } = useDropzone({
     onDrop,
-    accept: '.jpg, .jpeg, .png', // Define accepted file types
+    accept: '.jpg, .jpeg, .png, .mp3, .wav, .m4a', // Define accepted file types
   });
 
   return (

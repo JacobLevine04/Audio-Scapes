@@ -15,7 +15,7 @@ function Navbar() {
         <div className="navbar-container">
           <div className="logo-container">
             <Link to="/" className="navbar-logo">
-              MoodMusic&nbsp;
+              AudioScapes&nbsp;
               <LibraryMusic color="white" fontSize="large" />
             </Link>
           </div>

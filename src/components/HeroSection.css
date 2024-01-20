@@ -36,8 +36,13 @@ video {
   }
   
   .hero-btns {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%; /* Ensure full width */
     margin-top: 32px;
   }
+  
   
   .hero-btns .btn {
     margin: 6px;

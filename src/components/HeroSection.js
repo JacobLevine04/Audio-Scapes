@@ -2,7 +2,6 @@ import React from "react";
 import "../App.css";
 import "./HeroSection.css";
 import { ButtonCamera } from "./buttons/ButtonCamera";
-import { ButtonWheel } from "./buttons/ButtonWheel";
 import { ButtonUpload } from "./buttons/ButtonUpload";
 
 function HeroSection() {
@@ -10,22 +9,14 @@ function HeroSection() {
     <div className="hero-container">
       <video src="/videos/background.mp4" autoPlay loop muted className="dimmed-video" />
       <h1>START LISTENING</h1>
-      <p>Music tailored for you.</p>
+      <p>A Social Audio Experience</p>
       <div className="hero-btns">
-        <ButtonWheel
-          className="btns"
-          buttonStyle="btn--outline"
-          buttonSize="btn--large"
-        >
-          MOOD WHEEL
-        </ButtonWheel>
-
         <ButtonCamera
           className="btns"
           buttonStyle="btn--outline"
           buttonSize="btn--large"
         >
-          FACE DETECTION
+          LIVE RECORD
         </ButtonCamera>
         
         <ButtonUpload
@@ -33,7 +24,7 @@ function HeroSection() {
           buttonStyle="btn--outline"
           buttonSize="btn--large"
         >
-          PICTURE UPLOAD
+          FILE UPLOAD
         </ButtonUpload>
       </div>
     </div>
