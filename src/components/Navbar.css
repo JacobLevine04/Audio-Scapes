@@ -11,10 +11,13 @@
 }
 
 .navbar-container {
-  display: flex;
-  align-items: center;
-  width: 100%;
+  display: flex; /* This line makes your navbar a flex container */
+  justify-content: space-between; /* This spreads out navbar items to each end */
+  align-items: center; /* This centers the navbar items vertically */
+  height: 100%; /* Set the height to the height of your navbar if not already 100% */
+  padding: 0 10px; /* Adjust the padding as needed */
 }
+
 
 .nav-links {
   color: #ffffff;
@@ -47,3 +50,21 @@
   display: flex;
   align-items: center;
 }
+
+.loginButton {
+  padding: 10px 20px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1rem;
+  margin-left: 5; /* This will push the button to the right */
+  margin-right: 20px; /* Adjust right margin as needed */
+}
+
+.loginButton:hover {
+  background-color: #0056b3;
+}
+
+

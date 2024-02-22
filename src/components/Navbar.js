@@ -18,6 +18,8 @@ function Navbar() {
               AudioScapes&nbsp;
               <LibraryMusic color="white" fontSize="large" />
             </Link>
+            <button className="loginButton">Login</button>
+
           </div>
         </div>
       </nav>
