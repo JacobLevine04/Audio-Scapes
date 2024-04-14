@@ -12,7 +12,7 @@ export default function Upload() {
         const formData = new FormData();
         formData.append("snapshot", acceptedFiles[0]);
 
-        const response = await fetch("http://127.0.0.1:5000/camera", {
+        const response = await fetch("http://127.0.0.1:3001/camera", {
           method: "POST",
           body: formData,
         });
@@ -38,18 +38,18 @@ export default function Upload() {
   return (
     <div>
       <div className="upload">
-      <video src="/videos/background.mp4" autoPlay loop muted className="dimmed-video" />
+        <video src="/videos/background.mp4" autoPlay loop muted className="dimmed-video" />
         <div className="hero-container">
           <h1 style={{ color: "white" }}>UPLOAD AUDIO</h1>
-            <div className="hero-btns">
-              <UploadFile className="custom-upload-btn" color="black" fontSize="extra large" {...getRootProps()}>
-                  <input {...getInputProps()} />
-              </UploadFile>
-            </div>
+          <div className="hero-btns">
+            <UploadFile className="custom-upload-btn" color="black" fontSize="extra large" {...getRootProps()}>
+              <input {...getInputProps()} />
+            </UploadFile>
           </div>
+        </div>
       </div>
       <div>
-        <SongsList mood={mood}/>
+        <SongsList mood={mood} />
       </div>
     </div>
   );

@@ -1,8 +1,8 @@
 import React from "react";
 import "../App.css";
 import "./HeroSection.css";
-import { ButtonCamera } from "./buttons/ButtonCamera";
-import { ButtonUpload } from "./buttons/ButtonUpload";
+import { ButtonLogin } from "./buttons/ButtonLogin";
+import { ButtonCreate } from "./buttons/ButtonCreate";
 
 function HeroSection() {
   return (
@@ -11,21 +11,22 @@ function HeroSection() {
       <h1>START LISTENING</h1>
       <p>A Social Audio Experience</p>
       <div className="hero-btns">
-        <ButtonCamera
+        <ButtonLogin
           className="btns"
           buttonStyle="btn--outline"
           buttonSize="btn--large"
         >
-          LIVE RECORD
-        </ButtonCamera>
-        
-        <ButtonUpload
+          LOGIN
+        </ButtonLogin>
+
+        <ButtonCreate
           className="btns"
           buttonStyle="btn--outline"
           buttonSize="btn--large"
         >
-          FILE UPLOAD
-        </ButtonUpload>
+          CREATE ACCOUNT
+        </ButtonCreate>
+
       </div>
     </div>
   );
