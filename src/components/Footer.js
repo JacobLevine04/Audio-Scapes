@@ -14,25 +14,16 @@ function Footer() {
         <div className="input-areas">
         </div>
       </section>
-      <section class="social-media">
-        <div class="social-media-wrap">
-          <div class="footer-logo">
+      <section className="social-media">
+        <div className="social-media-wrap">
+          <div className="footer-logo">
             <Link to="/" className="social-logo">
               AudioScapes&nbsp;
               <LibraryMusic color="white" fontSize="large" />
             </Link>
           </div>
-          <small class="website-rights">AudioScapes © 2024</small>
-          <div class="social-icons">
-            <Link
-              class="social-icon-link spotify"
-              to="/"
-              target="_blank"
-              aria-label="Spotify"
-            >
-              <i class="fa-brands fa-spotify"></i>
-            </Link>
-          </div>
+          <small className="website-rights">AudioScapes © 2024</small>
+          {/* Removed Spotify icon link */}
         </div>
       </section>
     </div>

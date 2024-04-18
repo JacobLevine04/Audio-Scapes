@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import '../../App.css';
 import { useNavigate } from 'react-router-dom';
 import { useUser } from '../../UserContext';
-import SongsList from '../SongsList.js';
 
 function Login() {
     const [username, setUsername] = useState('');
@@ -64,7 +63,7 @@ function Login() {
                     <button type='submit' disabled={isDisabled}>Login</button>
                 </div>
             </form>
-            <SongsList mood='' />
+      
         </div>
     );
 }

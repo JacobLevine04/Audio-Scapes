@@ -1,7 +1,6 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import axios from 'axios';
 import { useUser } from '../../UserContext';
-import SongsList from "../SongsList.js";
 
 function Social() {
     const [currentFriends, setCurrentFriends] = useState([]);

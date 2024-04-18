@@ -1,27 +1,24 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React from "react";
 import { Link } from "react-router-dom";
 import "./Navbar.css";
-import { FileUpload, LibraryMusic } from "@mui/icons-material";
+import { LibraryMusic } from "@mui/icons-material";
+import { useUser } from '../UserContext';  // Adjust the import path as necessary
 
 function Navbar() {
-  useEffect(() => {
-    return () => {
-    };
-  }, []);
+  const { user } = useUser();  // Get the current user state from context
 
   return (
-    <>
-      <nav className="navbar">
-        <div className="navbar-container">
-          <div className="logo-container">
-            <Link to="/" className="navbar-logo">
-              AudioScapes&nbsp;
-              <LibraryMusic color="white" fontSize="large" />
-            </Link>
-          </div>
+    <nav className="navbar">
+      <div className="navbar-container">
+        <div className="logo-container">
+          {/* Conditionally change the destination based on user's login state */}
+          <Link to={user ? "/user" : "/"} className="navbar-logo">
+            AudioScapes&nbsp;
+            <LibraryMusic color="white" fontSize="large" />
+          </Link>
         </div>
-      </nav>
-    </>
+      </div>
+    </nav>
   );
 }
 

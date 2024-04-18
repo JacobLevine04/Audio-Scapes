@@ -1,7 +1,6 @@
 import React, { useState, useCallback } from "react";
 import { UploadFile } from "@mui/icons-material";
 import { useDropzone } from "react-dropzone";
-import SongsList from "../SongsList.js";
 
 export default function Upload() {
   const [mood, setMood] = useState("");
@@ -49,7 +48,7 @@ export default function Upload() {
         </div>
       </div>
       <div>
-        <SongsList mood={mood} />
+
       </div>
     </div>
   );

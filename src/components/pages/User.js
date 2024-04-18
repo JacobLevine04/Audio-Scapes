@@ -1,6 +1,5 @@
 import React from "react";
 import "../../App.css";
-import { ButtonCamera } from "../buttons/ButtonCamera";
 import { ButtonUpload } from "../buttons/ButtonUpload";
 import { AddFriendButton } from "../buttons/AddFriendButton";
 import { SocialButton } from "../buttons/SocialButton";
@@ -12,13 +11,6 @@ function User() {
             <h1>START LISTENING</h1>
             <p>A Social Audio Experience</p>
             <div className="hero-btns">
-                <ButtonCamera
-                    className="btns"
-                    buttonStyle="btn--outline"
-                    buttonSize="btn--large"
-                >
-                    LIVE RECORD
-                </ButtonCamera>
 
                 <ButtonUpload
                     className="btns"

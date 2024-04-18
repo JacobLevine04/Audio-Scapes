@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import "../../App.css";
 import { useNavigate } from "react-router-dom";
-import SongsList from "../SongsList.js";
 
 function Create() {
     const [username, setUsername] = useState("");
@@ -75,7 +74,7 @@ function Create() {
                 </div>
             </form>
             <div>
-                <SongsList mood="" /> { }
+            
             </div>
         </div>
     );

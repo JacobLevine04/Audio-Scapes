@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import '../../App.css';
 import axios from 'axios';
 import { useUser } from '../../UserContext';
-import SongsList from '../SongsList.js';
 
 function AddFriend() {
     const [searchQuery, setSearchQuery] = useState('');
@@ -60,7 +59,7 @@ function AddFriend() {
                     ))}
                 </ul>
             </div>
-            <SongsList mood="" />
+
         </div>
     );
 }
