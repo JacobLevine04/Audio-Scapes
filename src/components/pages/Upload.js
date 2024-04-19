@@ -1,54 +1,48 @@
-import React, { useState, useCallback } from "react";
-import { UploadFile } from "@mui/icons-material";
-import { useDropzone } from "react-dropzone";
+import React, { useState } from 'react';
+import { UploadFile } from '@mui/icons-material';
+import { useDropzone } from 'react-dropzone';
 
 export default function Upload() {
-  const [mood, setMood] = useState("");
+  const [uploadStatus, setUploadStatus] = useState('');
 
-  const onDrop = useCallback(
-    async (acceptedFiles) => {
-      try {
-        const formData = new FormData();
-        formData.append("snapshot", acceptedFiles[0]);
+  const onDrop = async (acceptedFiles) => {
+    const formData = new FormData();
+    formData.append('file', acceptedFiles[0]);
 
-        const response = await fetch("http://127.0.0.1:3001/camera", {
-          method: "POST",
-          body: formData,
-        });
+    try {
+      const response = await fetch('http://127.0.0.1:3001/upload', {
+        method: 'POST',
+        body: formData,
+      });
 
-        if (response.ok) {
-          const label = await response.text();
-          setMood(label);
-        } else {
-          console.error("Error processing snapshot on the server");
-        }
-      } catch (error) {
-        console.error("Error sending snapshot to the server:", error);
+      if (!response.ok) {
+        throw new Error('Server responded with an error!');
       }
-    },
-    [setMood]
-  );
+      
+      setUploadStatus('File uploaded successfully');
+      console.log('File uploaded successfully');
+
+    } catch (error) {
+      setUploadStatus('Error uploading file');
+      console.error('Error uploading file:', error);
+    }
+  };
 
   const { getRootProps, getInputProps } = useDropzone({
     onDrop,
-    accept: ".jpg, .jpeg, .png",
+    accept: '.m4a, .mp3, .mov, .mp4, .wav',
   });
 
   return (
-    <div>
-      <div className="upload">
-        <video src="/videos/background.mp4" autoPlay loop muted className="dimmed-video" />
-        <div className="hero-container">
-          <h1 style={{ color: "white" }}>UPLOAD AUDIO</h1>
-          <div className="hero-btns">
-            <UploadFile className="custom-upload-btn" color="black" fontSize="extra large" {...getRootProps()}>
-              <input {...getInputProps()} />
-            </UploadFile>
-          </div>
+    <div className="upload">
+      <video src="/videos/background.mp4" autoPlay loop muted className="dimmed-video" />
+      <div className="hero-container">
+        <h1 style={{ color: 'white' }}>UPLOAD AUDIO</h1>
+        <div {...getRootProps()} className="hero-btns">
+          <input {...getInputProps()} />
+          <UploadFile className="custom-upload-btn" color="black" fontSize="extra large" />
         </div>
-      </div>
-      <div>
-
+        {uploadStatus && <p style={{ color: 'white' }}>{uploadStatus}</p>}
       </div>
     </div>
   );

@@ -8,12 +8,12 @@
   position: sticky;
   top: 0;
   z-index: 999;
+  position: relative; /* Set position to relative for absolute positioning */
 }
 
 .navbar-container {
-  display: flex;
-  align-items: center;
   width: 100%;
+  position: relative; /* Set position to relative for absolute positioning */
 }
 
 .nav-links {
@@ -35,15 +35,16 @@
   text-align: center;
 }
 
-.navbar-logo {
-  font-size: 3rem; /* Adjust the font size as needed */
-  font-weight: bold;
-  text-decoration: none;
-  color: white; /* Change this to your desired logo color */
+.logout-container {
+  position: absolute; /* Set position to absolute */
+  top: 50%; /* Align to the middle vertically */
+  right: 20px; /* Adjust the margin to move the logout button to the right */
+  transform: translateY(-50%); /* Center vertically */
 }
 
-.spotify-login-container {
-  margin-left: auto;
-  display: flex;
-  align-items: center;
+.navbar-logo {
+  font-size: 3rem;
+  font-weight: bold;
+  text-decoration: none;
+  color: white;
 }

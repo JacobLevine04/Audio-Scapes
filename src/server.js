@@ -9,8 +9,16 @@ const saltRounds = 10;
 const app = express();
 const port = 3001;
 
+const multer = require('multer');
+const upload = multer({ dest: 'uploads/' }); // Configure multer to save files in an 'uploads' directory
+
+//const authMiddleware = require('./authmiddleware');
+
+
 app.use(bodyParser.json());
 app.use(cors());
+
+//app.use(authMiddleware);
 
 // MongoDB URI and Client Setup
 const uri = "mongodb+srv://justinphan300000:Aw9GgUyXXquZDWWI@cluster0.82gvsyp.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
@@ -27,23 +35,6 @@ async function connectDB() {
 }
 
 connectDB();
-
-app.get('/songs', async (req, res) => {
-    const arg1 = req.query.arg1;
-
-    try {
-        const db = client.db("Audio-Scapes");
-        const collection = db.collection("songs");
-
-        const songs = await collection.find({}).toArray();
-
-        res.status(200).json(songs);
-    } catch (error) {
-        console.error("Failed to fetch songs", error);
-        res.status(500).send("Error fetching songs");
-    }
-});
-
 
 app.post('/create-user', async (req, res) => {
     const { username, password, confirmPassword } = req.body;
@@ -178,6 +169,74 @@ app.post('/accept-friend', async (req, res) => {
     }
 });
 
+app.post('/upload', upload.single('file'), async (req, res) => {
+    if (!req.file) {
+        return res.status(400).send('No file uploaded.');
+    }
+
+    console.log("Uploaded file details:", req.file);  // Log the file object to inspect its properties
+
+    const file = req.file;
+    const userId = req.user._id;  // Use the authenticated user's ID
+
+    const db = client.db("Audio-Scapes");
+    const newFile = {
+        filename: file.originalname,
+        path: file.path, // The path where the file is stored
+        uploader: userId, // Use the authenticated user's ID
+        createdAt: new Date(), // Timestamp for sorting
+    };
+
+    try {
+        const result = await db.collection('files').insertOne(newFile);
+        console.log("Result of file insertion:", result);
+
+        // Since result.ops is not used, use insertedId to confirm the insertion
+        if (result.acknowledged) {
+            const insertedFile = {
+                ...newFile,
+                _id: result.insertedId
+            };
+            console.log("Inserted file details:", insertedFile);
+            res.status(201).json(insertedFile);
+        } else {
+            console.error("File insertion not acknowledged");
+            res.status(500).send("File insertion failed");
+        }
+    } catch (e) {
+        console.error("Error uploading file:", e);
+        res.status(500).send("Error uploading file");
+    }
+});
+
+
+
+app.get('/files', async (req, res) => {
+    const { username } = req.query;
+
+    if (!username) {
+        return res.status(400).send("Username query parameter is required");
+    }
+
+    try {
+        const db = client.db("Audio-Scapes");
+        const user = await db.collection("users").findOne({ username });
+
+        if (!user) {
+            return res.status(404).send("User not found");
+        }
+
+        const { currentFriends } = user;
+
+        // Fetch files uploaded by the current user's friends
+        const files = await db.collection('files').find({ uploader: { $in: currentFriends } }).toArray();
+        
+        res.json(files);
+    } catch (error) {
+        console.error("Error fetching files:", error);
+        res.status(500).send("Error fetching files");
+    }
+});
 
 
 app.listen(port, () => {
