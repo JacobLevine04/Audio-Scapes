@@ -2,24 +2,42 @@ import React, { useState, useEffect } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { UploadFile } from '@mui/icons-material';
 import FileList from '../FileList';
+import axios from 'axios';
 import { useFiles } from '../../FileContext';
 import { useUser } from '../../UserContext';
-import axios from 'axios';  // Make sure axios is imported
+import { useNavigate } from 'react-router-dom';
 
 export default function Upload() {
+  const { userFiles, setUserFiles } = useFiles();
   const { user } = useUser();
   const [uploadStatus, setUploadStatus] = useState('');
+
   const [uploadedFiles, setUploadedFiles] = useState(() => {
     const savedFiles = localStorage.getItem(`uploadedFiles-${user?.username}`);
     return savedFiles ? JSON.parse(savedFiles) : [];
   });
-  const { userFiles, setUserFiles } = useFiles();
+
+  // Combined state and localStorage update
+  const updateUploadedFiles = (newFileData) => {
+    setUploadedFiles(prevUploadedFiles => {
+      const updatedFiles = [newFileData, ...prevUploadedFiles];
+      localStorage.setItem(`uploadedFiles-${user?.username}`, JSON.stringify(updatedFiles));
+      return updatedFiles;
+    });
+  };
 
   useEffect(() => {
     if (user?.username) {
-      localStorage.setItem(`uploadedFiles-${user.username}`, JSON.stringify(uploadedFiles));
+      // Fetch the initial state when the user logs in or when the component mounts
+      const savedFiles = localStorage.getItem(`uploadedFiles-${user.username}`);
+      if (savedFiles) {
+        setUploadedFiles(JSON.parse(savedFiles));
+      }
     }
-  }, [uploadedFiles, user?.username]);
+  }, [user?.username]);
+
+  // Inside your component
+  const navigate = useNavigate();
 
   const onDrop = async (acceptedFiles) => {
     const file = acceptedFiles[0];
@@ -42,43 +60,45 @@ export default function Upload() {
         throw new Error(`Upload failed: ${response.status}`);
       }
 
-      const uploadedFile = await response.json(); // Assuming response returns the filename
-      setUploadStatus('File uploaded successfully');
+
+      const uploadedFile = await response.json();
       const currentTime = new Date().getTime();
 
-      // Create a file object with additional metadata
+
       const fileData = {
-        fileName: uploadedFile.fileName, // Assuming the response contains the filename
+        fileName: uploadedFile.fileName,
         username: user.username,
         uploadedAt: currentTime
       };
 
-      const newUploadedFiles = [fileData, ...uploadedFiles]; // Store fileData objects instead of just names
-      setUploadedFiles(newUploadedFiles);
+      updateUploadedFiles(fileData);
 
       // Update user files
-      const newUserFiles = {
-        ...userFiles,
-        [user.username]: [...(userFiles[user.username] || []), fileData.fileName]
-      };
+      const newUserFiles = { ...userFiles };
+      newUserFiles[user.username] = [...(userFiles[user.username] || []), fileData];
 
       // Also update friends' files
       const friendsRes = await axios.get(`http://localhost:3001/friends`, { params: { username: user.username } });
       const friends = friendsRes.data.currentFriends;
 
       friends.forEach(friend => {
-        newUserFiles[friend] = [...(newUserFiles[friend] || []), fileData.fileName];
+        newUserFiles[friend] = [...(newUserFiles[friend] || []), fileData];
       });
 
       setUserFiles(newUserFiles);
-      localStorage.setItem('userFiles', JSON.stringify(newUserFiles));  // Consider storing the full fileData if needed
+      localStorage.setItem('userFiles', JSON.stringify(newUserFiles));
+
+
+      navigate('/user');
+      setTimeout(() => navigate('/upload'), 5);  // Navigate back to upload after a short delay
+
+      //setUploadStatus('File uploaded successfully');
 
     } catch (error) {
       setUploadStatus(`Error uploading file: ${error.message}`);
       console.error('Error uploading file:', error);
     }
   };
-
 
   const { getRootProps, getInputProps } = useDropzone({
     onDrop,

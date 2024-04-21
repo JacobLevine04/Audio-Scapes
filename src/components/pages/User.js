@@ -33,16 +33,20 @@ function User() {
             const allFriendsFiles = [];
     
             for (const friendUsername of currentFriends) {
-                // Assuming files are stored in local storage like "uploadedFiles-username"
+                // Retrieve the array of file objects from local storage.
                 const friendFiles = JSON.parse(localStorage.getItem(`uploadedFiles-${friendUsername}`) || '[]');
                 if (Array.isArray(friendFiles)) {
-                    allFriendsFiles.push(...friendFiles);
+                    // Ensure the structure includes the filename, username, and uploadedAt.
+                    allFriendsFiles.push(...friendFiles.map(file => ({
+                      fileName: file.fileName, 
+                      username: file.username,
+                      uploadedAt: file.uploadedAt
+                    })));
                 } else {
                     console.error("No files found or invalid format for", friendUsername);
                 }
             }
     
-            console.log("All friends' files:", allFriendsFiles);
             setFriendsFiles(allFriendsFiles);
         };
     

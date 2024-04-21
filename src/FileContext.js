@@ -11,7 +11,7 @@ export const FileProvider = ({ children }) => {
         // Initialize from local storage based on the current user
         const storedFiles = localStorage.getItem('userFiles');
         const files = storedFiles ? JSON.parse(storedFiles) : {};
-        setUserFiles(files[user?.username] || []); // Load only the files for the logged-in user
+        setUserFiles(files[user?.username] || {}); // Load only the files for the logged-in user
     }, [user]);
 
     useEffect(() => {
