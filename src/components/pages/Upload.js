@@ -3,7 +3,6 @@ import { useDropzone } from 'react-dropzone';
 import { UploadFile } from '@mui/icons-material';
 import FileList from '../FileList'; // Import the FileList component
 
-
 export default function Upload({ updateFileList }) {
   const [uploadStatus, setUploadStatus] = useState('');
   const [uploadedFiles, setUploadedFiles] = useState([]); // State to store uploaded files
@@ -28,9 +27,10 @@ export default function Upload({ updateFileList }) {
       }
 
       const uploadedFile = await response.json();
-      updateFileList(uploadedFile);
+      console.log('Uploaded file:', uploadedFile); // Log to check the structure of the response
+      updateFileList(uploadedFile.fileName); // Assuming the server responds with an object containing the filename
       setUploadStatus('File uploaded successfully');
-      setUploadedFiles(prevFiles => [...prevFiles, uploadedFile]); // Update uploadedFiles state
+      setUploadedFiles(prevFiles => [uploadedFile.fileName, ...prevFiles]);
     } catch (error) {
       setUploadStatus(`Error uploading file: ${error.message}`);
       console.error('Error uploading file:', error);
@@ -51,7 +51,7 @@ export default function Upload({ updateFileList }) {
           <input {...getInputProps()} />
           <UploadFile className="custom-upload-btn" color="black" fontSize="extra large" />
         </div>
-        {uploadStatus && <p style={{ color: 'white' }}>{uploadStatus}</p>}
+        {uploadStatus && <p style={{ color: 'white', marginTop: '110px' }}>{uploadStatus}</p>}
         {/* Display uploaded files below the upload button */}
         <FileList files={uploadedFiles} />
       </div>

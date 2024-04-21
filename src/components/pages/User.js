@@ -5,7 +5,7 @@ import { AddFriendButton } from "../buttons/AddFriendButton";
 import { SocialButton } from "../buttons/SocialButton";
 import FileList from "../FileList"; // Import your FileList component
 
-function User() {
+function User({ files }) { // Ensure that files are passed as a prop
     return (
         <div className="user-page">
             <div className="hero-container">
@@ -40,8 +40,8 @@ function User() {
 
                 </div>
             </div>
-            {/* Add the FileList component below the buttons */}
-            <FileList />
+            {/* Pass the files prop to the FileList component */}
+            <FileList files={files} />
         </div>
     );
 }

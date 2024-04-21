@@ -10,14 +10,13 @@ import User from "./components/pages/User";
 import Social from "./components/pages/Social";
 import AddFriend from "./components/pages/AddFriend";
 import Footer from "./components/Footer";
-import FileList from "./components/FileList"; // Import the FileList component
 import { UserProvider } from './UserContext';
 
 function App() {
   const [files, setFiles] = useState([]);
 
   const updateFileList = (newFile) => {
-    setFiles(prevFiles => [...prevFiles, newFile]);
+    setFiles(prevFiles => [newFile, ...prevFiles]);
   };
 
   return (
@@ -25,16 +24,15 @@ function App() {
       <Router>
         <Navbar />
         <Routes>
-          <Route path="/" exact element={<Home />}></Route>
-          {/* Pass updateFileList as a prop to the Upload component */}
-          <Route path="/upload" exact element={<Upload updateFileList={updateFileList} />}></Route>
-          <Route path="/create" exact element={<Create />}></Route>
-          <Route path="/login" exact element={<Login />}></Route>
-          <Route path="/user" exact element={<User />}></Route>
-          <Route path="/addfriend" exact element={<AddFriend />}></Route>
-          <Route path="/social" exact element={<Social />}></Route>
-          {/* Adding a route for FileList if needed */}
-          <Route path="/files" exact element={<FileList files={files} />}></Route>
+          <Route path="/" exact element={<Home />} />
+          {/* Pass updateFileList and files as props to the Upload and User components */}
+          <Route path="/upload" exact element={<Upload updateFileList={updateFileList} />} />
+          <Route path="/create" exact element={<Create />} />
+          <Route path="/login" exact element={<Login />} />
+          <Route path="/user" exact element={<User files={files} />} /> {/* Pass files to User */}
+          <Route path="/addfriend" exact element={<AddFriend />} />
+          <Route path="/social" exact element={<Social />} />
+          {/* No need for a separate route for FileList if it's just part of User and Upload */}
         </Routes>
         <Footer />
       </Router>

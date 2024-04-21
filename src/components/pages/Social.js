@@ -38,13 +38,13 @@ function Social() {
     return (
         <div>
             <video src="/videos/background.mp4" autoPlay loop muted className="dimmed-video" />
-            <div className='hero-create'>
+            <div className='hero-create2'>
                 <h2>Current Friends:</h2>
                 {currentFriends.map((friend) => (
                     <div key={friend}>{friend}</div>
                 ))}
             </div>
-            <div className='hero-create'>
+            <div className='hero-create2'>
                 <h2>Pending Friends:</h2>
                 {pendingFriends.map((friend) => (
                     <div key={friend}>
