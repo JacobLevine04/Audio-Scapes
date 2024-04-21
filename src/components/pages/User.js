@@ -1,11 +1,58 @@
-import React from "react";
-import "../../App.css";
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
+import { useUser } from '../../UserContext';
 import { ButtonUpload } from "../buttons/ButtonUpload";
 import { AddFriendButton } from "../buttons/AddFriendButton";
 import { SocialButton } from "../buttons/SocialButton";
-import FileList from "../FileList"; // Import your FileList component
+import FileList from "../FileList";
+//import { useFiles } from '../../FileContext';
 
-function User({ files }) { // Ensure that files are passed as a prop
+function User() {
+    const { user } = useUser();
+    // const { userFiles } = useFiles();
+    const [friendsFiles, setFriendsFiles] = useState([]);
+    const [currentFriends, setCurrentFriends] = useState([]);
+
+    useEffect(() => {
+        const fetchFriends = async () => {
+            if (!user) return;
+
+            try {
+                const res = await axios.get(`http://localhost:3001/friends`, { params: { username: user.username } });
+                setCurrentFriends(res.data.currentFriends);
+            } catch (error) {
+                console.error('Failed to fetch friends', error);
+            }
+        };
+
+        fetchFriends();
+    }, [user]);
+
+    useEffect(() => {
+        const loadFriendFiles = () => {
+            const allFriendsFiles = [];
+    
+            for (const friendUsername of currentFriends) {
+                // Assuming files are stored in local storage like "uploadedFiles-username"
+                const friendFiles = JSON.parse(localStorage.getItem(`uploadedFiles-${friendUsername}`) || '[]');
+                if (Array.isArray(friendFiles)) {
+                    allFriendsFiles.push(...friendFiles);
+                } else {
+                    console.error("No files found or invalid format for", friendUsername);
+                }
+            }
+    
+            console.log("All friends' files:", allFriendsFiles);
+            setFriendsFiles(allFriendsFiles);
+        };
+    
+        if (currentFriends.length > 0) {
+            loadFriendFiles();
+        }
+    }, [currentFriends]);
+    
+    
+
     return (
         <div className="user-page">
             <div className="hero-container">
@@ -13,7 +60,6 @@ function User({ files }) { // Ensure that files are passed as a prop
                 <h1>START LISTENING</h1>
                 <p>A Social Audio Experience</p>
                 <div className="hero-btns">
-
                     <ButtonUpload
                         className="btns"
                         buttonStyle="btn--outline"
@@ -37,11 +83,9 @@ function User({ files }) { // Ensure that files are passed as a prop
                     >
                         SOCIAL
                     </SocialButton>
-
                 </div>
             </div>
-            {/* Pass the files prop to the FileList component */}
-            <FileList files={files} />
+            <FileList files={friendsFiles} />
         </div>
     );
 }
