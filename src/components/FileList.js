@@ -1,15 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { useUser } from '../UserContext'; // Adjust the path as needed
 import './FileList.css';
 
 function FileList() {
     const [files, setFiles] = useState([]);
-    const { user } = useUser(); // This should give you the current user context
 
     useEffect(() => {
         const fetchFiles = async () => {
             try {
-                const response = await fetch(`http://127.0.0.1:3001/files?username=${user.username}`);
+                // Fetch the list of files directly from the server's uploads folder
+                const response = await fetch('http://localhost:3001/files');
 
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
@@ -22,16 +21,14 @@ function FileList() {
             }
         };
 
-        if (user) {
-            fetchFiles();
-        }
-    }, [user]); // Runs when the component mounts and when the user context updates
+        fetchFiles(); // Fetch files when the component mounts
+    }, []);
 
     return (
         <div className="file-list">
             {files.map((file, index) => (
                 <div key={index} className="file-entry">
-                    <span>{file.filename}</span>
+                    <span>{file}</span>
                     {/* Add more file details here as needed */}
                 </div>
             ))}

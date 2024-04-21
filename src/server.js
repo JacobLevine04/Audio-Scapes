@@ -1,38 +1,52 @@
 const express = require('express');
+const multer  = require('multer');
+const path = require('path');
+const fs = require('fs');
 const bodyParser = require('body-parser');
 const { MongoClient } = require('mongodb');
 const cors = require('cors');
-
 const bcrypt = require('bcrypt');
 const saltRounds = 10;
 
 const app = express();
 const port = 3001;
 
-const multer = require('multer');
-const upload = multer({ dest: 'uploads/' }); // Configure multer to save files in an 'uploads' directory
 
-//const authMiddleware = require('./authmiddleware');
-
-
+// Set up multer storage
+const storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+      cb(null, 'uploads/') // Specify the upload directory
+    },
+    filename: function (req, file, cb) {
+      cb(null, `${Date.now()}_${file.originalname}`); // Generate unique filename
+    }
+  });
+  
+  // Create multer instance
+  const upload = multer({ storage: storage });
+  
 app.use(bodyParser.json());
 
 const corsOptions = {
-    origin: 'http://localhost:3000', // Adjust this to match your client's URL exactly
-    credentials: true, // This is needed when using credentials mode 'include'
-    optionsSuccessStatus: 200 // Some legacy browsers (IE11, various SmartTVs) choke on 204
+    origin: 'http://localhost:3000',
+    credentials: true,
+    optionsSuccessStatus: 200
 };
 
 app.use(cors(corsOptions));
 
+app.use((req, res, next) => {
+    res.setHeader('Access-Control-Allow-Origin', 'http://localhost:3000');
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+    res.setHeader('Access-Control-Allow-Credentials', true);
+    next();
+});
 
-//app.use(authMiddleware);
 
-// MongoDB URI and Client Setup
 const uri = "mongodb+srv://justinphan300000:Aw9GgUyXXquZDWWI@cluster0.82gvsyp.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
 const client = new MongoClient(uri);
 
-// Connect to MongoDB
 async function connectDB() {
     try {
         await client.connect();
@@ -97,7 +111,6 @@ app.get('/search-users', async (req, res) => {
     }
 });
 
-
 app.post('/authenticate', async (req, res) => {
     const { username, password } = req.body;
     const db = client.db("Audio-Scapes");
@@ -109,7 +122,6 @@ app.post('/authenticate', async (req, res) => {
             return res.status(401).send('User not found');
         }
 
-        // Compare hashed password
         const match = await bcrypt.compare(password, user.password);
         if (match) {
             // Passwords match
@@ -123,7 +135,6 @@ app.post('/authenticate', async (req, res) => {
         res.status(500).send('Internal server error');
     }
 });
-
 
 app.get('/friends', async (req, res) => {
     const { username } = req.query;
@@ -148,7 +159,6 @@ app.get('/friends', async (req, res) => {
     }
 });
 
-
 app.post('/add-friend', async (req, res) => {
     const { currentUsername, friendUsername } = req.body;
     try {
@@ -161,7 +171,6 @@ app.post('/add-friend', async (req, res) => {
         res.status(500).send("Error processing friend request");
     }
 });
-
 
 app.post('/accept-friend', async (req, res) => {
     const { currentUsername, friendUsername } = req.body;
@@ -177,76 +186,33 @@ app.post('/accept-friend', async (req, res) => {
     }
 });
 
-app.post('/upload', upload.single('file'), async (req, res) => {
-    if (!req.file) {
+
+// Upload endpoint
+app.post('/upload', upload.single('file'), (req, res) => {
+    const file = req.file;
+
+    if (!file) {
         return res.status(400).send('No file uploaded.');
     }
 
-    console.log("Uploaded file details:", req.file);
-
-    // Extract the user ID from the form data
-    const userId = req.body.userId; // Make sure 'userId' is sent as part of the form data
-
-    if (!userId) {
-        return res.status(400).send('User ID must be provided.');
-    }
-
-    const db = client.db("Audio-Scapes");
-    const newFile = {
-        filename: req.file.originalname,
-        path: req.file.path, // The path where the file is stored
-        uploader: userId, // Associate the file with the provided user ID
-        createdAt: new Date(), // Timestamp for sorting
-    };
-
-    try {
-        const result = await db.collection('files').insertOne(newFile);
-        console.log("Result of file insertion:", result);
-
-        if (result.acknowledged) {
-            const insertedFile = {
-                ...newFile,
-                _id: result.insertedId
-            };
-            console.log("Inserted file details:", insertedFile);
-            res.status(201).json(insertedFile);
-        } else {
-            throw new Error("File insertion not acknowledged");
-        }
-    } catch (e) {
-        console.error("Error uploading file:", e);
-        res.status(500).send("Error uploading file");
-    }
+    // Respond with the filename or any other data if needed
+    res.status(201).json({ fileName: file.filename });
 });
 
 
-app.get('/files', async (req, res) => {
-    const { username } = req.query;
+// Serve uploaded files statically
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
-    if (!username) {
-        return res.status(400).send("Username query parameter is required");
-    }
-
-    try {
-        const db = client.db("Audio-Scapes");
-        const user = await db.collection("users").findOne({ username });
-
-        if (!user) {
-            return res.status(404).send("User not found");
+// Retrieve uploaded files
+app.get('/files', (req, res) => {
+    fs.readdir('uploads', (err, files) => {
+        if (err) {
+            console.error('Error reading files:', err);
+            return res.status(500).send('Error reading files');
         }
-
-        const { currentFriends } = user;
-
-        // Fetch files uploaded by the current user's friends
-        const files = await db.collection('files').find({ uploader: { $in: currentFriends } }).toArray();
-        
         res.json(files);
-    } catch (error) {
-        console.error("Error fetching files:", error);
-        res.status(500).send("Error fetching files");
-    }
+    });
 });
-
 
 app.listen(port, () => {
     console.log(`Server listening at http://localhost:${port}`);

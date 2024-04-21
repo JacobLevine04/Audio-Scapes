@@ -1,37 +1,36 @@
 import React, { useState } from 'react';
-import { UploadFile } from '@mui/icons-material';
 import { useDropzone } from 'react-dropzone';
-import { useUser } from '../../UserContext'; // Adjust the import path as needed
+import { UploadFile } from '@mui/icons-material';
+import FileList from '../FileList'; // Import the FileList component
+
 
 export default function Upload({ updateFileList }) {
   const [uploadStatus, setUploadStatus] = useState('');
-  const { user } = useUser(); // Get the logged-in user's info from context
+  const [uploadedFiles, setUploadedFiles] = useState([]); // State to store uploaded files
 
   const onDrop = async (acceptedFiles) => {
-    if (!user) {
-      setUploadStatus('You need to be logged in to upload files.');
-      return; // Exit if there is no user information
-    }
-
-    const formData = new FormData();
-    formData.append('file', acceptedFiles[0]);
-    formData.append('userId', user._id); // Add the user's ID to the form data
+    const file = acceptedFiles[0];
 
     try {
-      const response = await fetch('http://127.0.0.1:3001/upload', {
+      // Perform any necessary validation on the file here
+
+      // Save the file to the 'uploads' folder
+      const formData = new FormData();
+      formData.append('file', file);
+
+      const response = await fetch('/upload', {
         method: 'POST',
         body: formData,
-        credentials: 'include' // Ensures cookies or auth headers are sent with the request
       });
 
       if (!response.ok) {
         throw new Error(`Upload failed: ${response.status}`);
       }
 
-      const uploadedFile = await response.json(); // Assuming the server returns the details of the uploaded file
-      updateFileList(uploadedFile); // Update the file list with the newly uploaded file
+      const uploadedFile = await response.json();
+      updateFileList(uploadedFile);
       setUploadStatus('File uploaded successfully');
-
+      setUploadedFiles(prevFiles => [...prevFiles, uploadedFile]); // Update uploadedFiles state
     } catch (error) {
       setUploadStatus(`Error uploading file: ${error.message}`);
       console.error('Error uploading file:', error);
@@ -53,6 +52,8 @@ export default function Upload({ updateFileList }) {
           <UploadFile className="custom-upload-btn" color="black" fontSize="extra large" />
         </div>
         {uploadStatus && <p style={{ color: 'white' }}>{uploadStatus}</p>}
+        {/* Display uploaded files below the upload button */}
+        <FileList files={uploadedFiles} />
       </div>
     </div>
   );

@@ -10,13 +10,13 @@ import User from "./components/pages/User";
 import Social from "./components/pages/Social";
 import AddFriend from "./components/pages/AddFriend";
 import Footer from "./components/Footer";
-import FileList from "./components/FileList"; // Assuming FileList is exported correctly from the path
+import FileList from "./components/FileList"; // Import the FileList component
 import { UserProvider } from './UserContext';
 
 function App() {
   const [files, setFiles] = useState([]);
 
-  const addFileToList = (newFile) => {
+  const updateFileList = (newFile) => {
     setFiles(prevFiles => [...prevFiles, newFile]);
   };
 
@@ -26,7 +26,8 @@ function App() {
         <Navbar />
         <Routes>
           <Route path="/" exact element={<Home />}></Route>
-          <Route path="/upload" exact element={<Upload onFileUploaded={addFileToList} />}></Route>
+          {/* Pass updateFileList as a prop to the Upload component */}
+          <Route path="/upload" exact element={<Upload updateFileList={updateFileList} />}></Route>
           <Route path="/create" exact element={<Create />}></Route>
           <Route path="/login" exact element={<Login />}></Route>
           <Route path="/user" exact element={<User />}></Route>
