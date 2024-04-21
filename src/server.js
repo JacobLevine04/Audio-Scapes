@@ -16,7 +16,15 @@ const upload = multer({ dest: 'uploads/' }); // Configure multer to save files i
 
 
 app.use(bodyParser.json());
-app.use(cors());
+
+const corsOptions = {
+    origin: 'http://localhost:3000', // Adjust this to match your client's URL exactly
+    credentials: true, // This is needed when using credentials mode 'include'
+    optionsSuccessStatus: 200 // Some legacy browsers (IE11, various SmartTVs) choke on 204
+};
+
+app.use(cors(corsOptions));
+
 
 //app.use(authMiddleware);
 
@@ -174,16 +182,20 @@ app.post('/upload', upload.single('file'), async (req, res) => {
         return res.status(400).send('No file uploaded.');
     }
 
-    console.log("Uploaded file details:", req.file);  // Log the file object to inspect its properties
+    console.log("Uploaded file details:", req.file);
 
-    const file = req.file;
-    const userId = req.user._id;  // Use the authenticated user's ID
+    // Extract the user ID from the form data
+    const userId = req.body.userId; // Make sure 'userId' is sent as part of the form data
+
+    if (!userId) {
+        return res.status(400).send('User ID must be provided.');
+    }
 
     const db = client.db("Audio-Scapes");
     const newFile = {
-        filename: file.originalname,
-        path: file.path, // The path where the file is stored
-        uploader: userId, // Use the authenticated user's ID
+        filename: req.file.originalname,
+        path: req.file.path, // The path where the file is stored
+        uploader: userId, // Associate the file with the provided user ID
         createdAt: new Date(), // Timestamp for sorting
     };
 
@@ -191,7 +203,6 @@ app.post('/upload', upload.single('file'), async (req, res) => {
         const result = await db.collection('files').insertOne(newFile);
         console.log("Result of file insertion:", result);
 
-        // Since result.ops is not used, use insertedId to confirm the insertion
         if (result.acknowledged) {
             const insertedFile = {
                 ...newFile,
@@ -200,15 +211,13 @@ app.post('/upload', upload.single('file'), async (req, res) => {
             console.log("Inserted file details:", insertedFile);
             res.status(201).json(insertedFile);
         } else {
-            console.error("File insertion not acknowledged");
-            res.status(500).send("File insertion failed");
+            throw new Error("File insertion not acknowledged");
         }
     } catch (e) {
         console.error("Error uploading file:", e);
         res.status(500).send("Error uploading file");
     }
 });
-
 
 
 app.get('/files', async (req, res) => {
@@ -242,4 +251,3 @@ app.get('/files', async (req, res) => {
 app.listen(port, () => {
     console.log(`Server listening at http://localhost:${port}`);
 });
-

@@ -1,7 +1,7 @@
+import React, { useState } from 'react';
 import "./App.css";
 import Navbar from "./components/Navbar";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-//import { UserProvider } from './authmanager';
 import Home from "./components/pages/Home";
 import Upload from "./components/pages/Upload";
 import Create from "./components/pages/Create";
@@ -10,24 +10,30 @@ import User from "./components/pages/User";
 import Social from "./components/pages/Social";
 import AddFriend from "./components/pages/AddFriend";
 import Footer from "./components/Footer";
-
+import FileList from "./components/FileList"; // Assuming FileList is exported correctly from the path
 import { UserProvider } from './UserContext';
 
-// import results from "./components/results";
-
 function App() {
+  const [files, setFiles] = useState([]);
+
+  const addFileToList = (newFile) => {
+    setFiles(prevFiles => [...prevFiles, newFile]);
+  };
+
   return (
     <UserProvider>
       <Router>
         <Navbar />
         <Routes>
-          <Route path="/" exact element={<Home></Home>}></Route>
-          <Route path="/upload" exact element={<Upload></Upload>}></Route>
-          <Route path="/create" exact element={<Create></Create>}></Route>
-          <Route path="/login" exact element={<Login></Login>}></Route>
-          <Route path="/user" exact element={<User></User>}></Route>
-          <Route path="/addfriend" exact element={<AddFriend></AddFriend>}></Route>
-          <Route path="/social" exact element={<Social></Social>}></Route>
+          <Route path="/" exact element={<Home />}></Route>
+          <Route path="/upload" exact element={<Upload onFileUploaded={addFileToList} />}></Route>
+          <Route path="/create" exact element={<Create />}></Route>
+          <Route path="/login" exact element={<Login />}></Route>
+          <Route path="/user" exact element={<User />}></Route>
+          <Route path="/addfriend" exact element={<AddFriend />}></Route>
+          <Route path="/social" exact element={<Social />}></Route>
+          {/* Adding a route for FileList if needed */}
+          <Route path="/files" exact element={<FileList files={files} />}></Route>
         </Routes>
         <Footer />
       </Router>
